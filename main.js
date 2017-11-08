@@ -1538,8 +1538,6 @@ var my_tree_data = [
 var not_active = {};
 
 function traverseTree(orgChart, inputArray) {
-    var outputArray = [];
-
     return traverseNode(orgChart, inputArray, outputArray, inputArray[0].id);
 }
 
@@ -1586,7 +1584,8 @@ function traverseNode(orgChart, inputArray, outputArray, nodeId, parentId, isLef
     if (node.parentId) {
         node.fakeId = getChildId(node.parentId, isLeftBranch);
         node.fakeParentId = parentId;
-        orgChart.insertNode(node.fakeParentId, node, node.fakeId);
+        //orgChart.insertNode(node.fakeParentId, node, node.fakeId);
+        outputArray.push(node);
     }
     if (node.not_active) {
         nodes_customize[node.fakeId] = {color: "green"};
@@ -1597,7 +1596,8 @@ function traverseNode(orgChart, inputArray, outputArray, nodeId, parentId, isLef
         mock.fakeId = getChildId(node.id, 0);
         nodes_customize[getChildId(node.id, 0)] = {theme: "helen"};
         mock.fakeParentId = node.fakeId;
-        orgChart.insertNode(mock.fakeParentId, mock, mock.fakeId);
+        //orgChart.insertNode(mock.fakeParentId, mock, mock.fakeId);
+        outputArray.push(mock);
     } else {
         traverseNode(orgChart, inputArray, outputArray, node.left_node, node.fakeId, 0);
     }
@@ -1607,7 +1607,8 @@ function traverseNode(orgChart, inputArray, outputArray, nodeId, parentId, isLef
         mock.fakeId = getChildId(node.id, 1);
         nodes_customize[getChildId(node.id, 1)] = {theme: "helen"};
         mock.fakeParentId = node.fakeId;
-        orgChart.insertNode(mock.fakeParentId, mock, mock.fakeId);
+        //orgChart.insertNode(mock.fakeParentId, mock, mock.fakeId);
+        outputArray.push(mock);
     } else {
         traverseNode(orgChart, inputArray, outputArray, node.right_node, node.fakeId, 1);
     }
@@ -1616,6 +1617,12 @@ function traverseNode(orgChart, inputArray, outputArray, nodeId, parentId, isLef
 }
 
 var peopleElement = document.getElementById("tree");
+var outputArray = [generateRootNode(my_tree_data)];
+
+traverseTree(null, my_tree_data, outputArray);
+
+console.log(outputArray);
+
 var orgChart = new getOrgChart(peopleElement, {
     color: "neutralgrey",
     gridView: true,
@@ -1628,10 +1635,10 @@ var orgChart = new getOrgChart(peopleElement, {
     linkType: "M", //"M"
     primaryFields: ["full_name", "name", "package", "left", "right"],
     photoFields: ["image"],
-    expandToLevel: 5,
+    expandToLevel: 500,
     scale: 0.3,
-    dataSource: [generateRootNode(my_tree_data)],
+    dataSource: outputArray,
     customize: nodes_customize
 });
 
-traverseTree(orgChart, my_tree_data);
+//traverseTree(orgChart, my_tree_data);
